@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #15352a;
+  --color-forest-2: #1c4234;
+  --color-forest-pill: #34564a;
+  --color-sage: #d9e6da;
+  --color-sage-2: #e6efe6;
+  --color-card: #ffffff;
+  --color-tile: #eaf2eb;
+  --color-line: #e2ebe3;
+  --color-ink: #16352a;
+  --color-ink-2: #324b3e;
+  --color-muted: #5f7468;
+  --color-muted-2: #88998f;
+  --color-on-forest: #f2f7f2;
+  --color-on-forest-mut: #9bb3a4;
+  --color-ok-bg: #dcebdd;
+  --color-ok-ink: #2c5a3d;
+  --color-warn-bg: #f6ecd6;
+  --color-warn-ink: #7a5a14;
+  --color-new-bg: #dde8f3;
+  --color-new-ink: #2c4d75;
+  --color-green-deep: oklch(0.42 0.09 152);
+  --color-gold: oklch(0.66 0.11 82);
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow-card: 0 1px 2px rgba(20, 50, 40, 0.05), 0 6px 20px -10px rgba(20, 50, 40, 0.16);
+  --shadow-lg: 0 2px 6px rgba(20, 50, 40, 0.06), 0 24px 48px -22px rgba(20, 50, 40, 0.28);
+  --sidebar-w: 256px;
+}
+
+:root {
+  --forest: #15352a;
+  --forest-2: #1c4234;
+  --forest-pill: #34564a;
+  --sage: #d9e6da;
+  --sage-2: #e6efe6;
+  --card: #ffffff;
+  --tile: #eaf2eb;
+  --line: #e2ebe3;
+  --ink: #16352a;
+  --ink-2: #324b3e;
+  --muted: #5f7468;
+  --muted-2: #88998f;
+  --on-forest: #f2f7f2;
+  --on-forest-mut: #9bb3a4;
+  --green-deep: oklch(0.42 0.09 152);
+  --gold: oklch(0.66 0.11 82);
+  --ok-bg: #dcebdd;
+  --ok-ink: #2c5a3d;
+  --warn-bg: #f6ecd6;
+  --warn-ink: #7a5a14;
+  --new-bg: #dde8f3;
+  --new-ink: #2c4d75;
+  --r-lg: 20px;
+  --r-md: 14px;
+  --r-sm: 10px;
+  --shadow: 0 1px 2px rgba(20, 50, 40, 0.05), 0 6px 20px -10px rgba(20, 50, 40, 0.16);
+  --shadow-lg: 0 2px 6px rgba(20, 50, 40, 0.06), 0 24px 48px -22px rgba(20, 50, 40, 0.28);
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sidebar-w: 256px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-hanken), var(--sans);
+  background: var(--sage);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.font-serif {
+  font-family: var(--font-newsreader), var(--serif);
+}
+
+.font-mono {
+  font-family: var(--font-ibm-mono), var(--mono);
+}
+
+::selection {
+  background: #c7e0cb;
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease both;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(7px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+  }
+}
+
+.leaflet-container {
+  font-family: var(--sans);
+  background: #e9f1ea;
+}
+
+.leaflet-control-attribution {
+  display: none;
+}

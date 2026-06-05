@@ -1,0 +1,120 @@
+import { apiClient } from "./client";
+
+// ─── Backend response types ───────────────────────────────────────────────────
+
+interface ApiEnvelope<T> {
+  success: boolean;
+  data: T;
+  pagination?: unknown;
+}
+
+function unwrap<T>(res: ApiEnvelope<T>): T {
+  return res.data;
+}
+
+export interface AuthUser {
+  id: string;
+  role: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string | null;
+  avatarUrl: string | null;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  user: AuthUser;
+}
+
+export interface BackendCompany {
+  id: string;
+  name: string;
+  description: string | null;
+  logoUrl: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface BackendProjectTree {
+  id: string;
+  treeId: string;
+  quantity: number;
+  notes: string | null;
+  tree: {
+    id: string;
+    name: string;
+    specie: string;
+    imageUrl: string | null;
+    price?: number | string | null;
+  };
+}
+
+export interface BackendProjectLocation {
+  id: string;
+  plantingSiteId: string;
+  notes: string | null;
+  trees?: BackendProjectTree[];
+  plantingSite?: {
+    id: string;
+    name: string;
+    cityName?: string;
+    placeType?: string;
+    latitude?: number | string;
+    longitude?: number | string;
+  };
+}
+
+export interface BackendProject {
+  id: string;
+  companyId: string;
+  name: string;
+  description: string | null;
+  budgetAmount: string | null;
+  budgetCurrency: string;
+  status: "active" | "completed" | "cancelled";
+  locations?: BackendProjectLocation[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+export async function requestOtp(email: string): Promise<void> {
+  await apiClient.post<unknown>("/auth/otp/request", { email });
+}
+
+export async function verifyOtp(email: string, code: string): Promise<AuthResponse> {
+  const res = await apiClient.post<ApiEnvelope<AuthResponse>>("/auth/otp/verify", { email, code });
+  return unwrap(res);
+}
+
+// ─── Corporate data ───────────────────────────────────────────────────────────
+
+export interface CompanyStats {
+  activeProjects: number;
+  totalProjects: number;
+  totalTreesAllocated: number;
+  totalTreesPlanted: number;
+  totalInvestment: number;
+  totalLocations: number;
+}
+
+export async function getMyStats(): Promise<CompanyStats> {
+  const res = await apiClient.get<ApiEnvelope<CompanyStats>>("/corporate/me/stats");
+  return unwrap(res);
+}
+
+export async function getMyCompany(): Promise<BackendCompany> {
+  const res = await apiClient.get<ApiEnvelope<BackendCompany>>("/corporate/me/company");
+  return unwrap(res);
+}
+
+export async function getMyProjects(): Promise<BackendProject[]> {
+  const res = await apiClient.get<ApiEnvelope<BackendProject[]>>("/corporate/me/projects?limit=100");
+  return unwrap(res) ?? [];
+}
+
+export async function getMyProject(id: string): Promise<BackendProject> {
+  const res = await apiClient.get<ApiEnvelope<BackendProject>>(`/corporate/me/projects/${id}`);
+  return unwrap(res);
+}
