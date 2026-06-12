@@ -754,7 +754,7 @@ export function EmissionsScreen({ role, go }: { role: Role; go: (next: Partial<R
 
             <p className="mt-4 text-[11.5px] leading-relaxed text-muted">
               Based on {KG_PER_TREE_PER_YEAR} kg CO₂ absorbed per tree per year (human-planted average).
-              Budget estimate uses your portfolio's cost-per-tree ratio.
+              Budget estimate uses your portfolio&apos;s cost-per-tree ratio.
             </p>
           </div>
         </div>

@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
     const tileUrl = await new Promise<string>((resolve, reject) => {
       try {
-        ndvi.getMap(NDVI_VIS, (tileObj: any) => {
+        ndvi.getMap(NDVI_VIS, (tileObj: { urlFormat?: string }) => {
           if (!tileObj?.urlFormat) {
             reject(new Error("EE getMap returned no urlFormat"));
           } else {

@@ -2,7 +2,6 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { getMyCompany, getMyProject, getMyProjects, getMyStats } from "@/lib/api/corporate";
-import type { CompanyStats } from "@/lib/api/corporate";
 import { toCompany, toProject, toPortfolio, buildMonthly } from "@/lib/api/transform";
 import { ApiError } from "@/lib/api/client";
 import { getCurrentUser } from "@/lib/auth";
