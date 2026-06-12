@@ -11,8 +11,8 @@ export function BarCompareChart({ data }: { data: BarData[] }) {
   const padB = 46;
   const iw = W - padL - padR;
   const ih = H - padT - padB;
-  const max = Math.max(...data.flatMap((d) => [d.a, d.b])) * 1.12;
-  const groupW = iw / data.length;
+  const max = (Math.max(...data.flatMap((d) => [d.a, d.b])) * 1.12) || 1;
+  const groupW = iw / (data.length || 1);
   const barW = Math.min(34, groupW / 3.4);
   const y = (v: number) => padT + ih - (v / max) * ih;
   const ticks = 4;
@@ -46,7 +46,7 @@ export function BarCompareChart({ data }: { data: BarData[] }) {
               x={cx - barW - gap / 2}
               y={y(d.a)}
               width={barW}
-              height={padT + ih - y(d.a)}
+              height={Math.max(0, padT + ih - y(d.a))}
               rx="4"
               fill="oklch(0.62 0.07 152)"
             />
@@ -54,7 +54,7 @@ export function BarCompareChart({ data }: { data: BarData[] }) {
               x={cx + gap / 2}
               y={y(d.b)}
               width={barW}
-              height={padT + ih - y(d.b)}
+              height={Math.max(0, padT + ih - y(d.b))}
               rx="4"
               fill="oklch(0.5 0.12 150)"
             />

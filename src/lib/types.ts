@@ -6,6 +6,8 @@ export type Screen =
   | "project"
   | "reports"
   | "report"
+  | "emissions"
+  | "showcase"
   | "settings";
 
 export type Route = {

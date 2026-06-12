@@ -5,6 +5,7 @@ import { getMyCompany, getMyProject, getMyProjects, getMyStats } from "@/lib/api
 import type { CompanyStats } from "@/lib/api/corporate";
 import { toCompany, toProject, toPortfolio, buildMonthly } from "@/lib/api/transform";
 import { ApiError } from "@/lib/api/client";
+import { getCurrentUser } from "@/lib/auth";
 import { fmtTZS, fmtUSD, usd } from "@/lib/format";
 import type { Alert, Company, Monthly, Portfolio, Project, Report } from "@/lib/types";
 
@@ -101,17 +102,19 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
         projectList.map((p) => getMyProject(p.id))
       );
 
-      const projects = backendProjects.map(toProject);
-      const portfolio = toPortfolio(projects, stats);
+      const portfolio = toPortfolio([], stats);
+      const projects = backendProjects.map((p) => toProject(p, portfolio.survival));
       const monthly = buildMonthly(stats.totalTreesPlanted, portfolio.verifiedTZS);
 
       // Wire mock reports to the first real project id so navigation works
       const firstId = projects[0]?.id ?? "";
       const reports = MOCK_REPORTS.map((r) => ({ ...r, projectId: firstId, project: projects[0]?.name ?? "—" }));
 
+      const authUser = getCurrentUser();
+
       setData({
         fx: 2600,
-        company: toCompany(backendCompany),
+        company: toCompany(backendCompany, authUser),
         projects,
         portfolio,
         reports,

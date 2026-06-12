@@ -1,7 +1,10 @@
 "use client";
 
+import { BottomNav } from "@/components/layout/BottomNav";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DashboardScreen } from "@/components/screens/DashboardScreen";
+import { EmissionsScreen } from "@/components/screens/EmissionsScreen";
+import { ShowcaseScreen } from "@/components/screens/ShowcaseScreen";
 import { ProjectDetailScreen, ProjectsScreen } from "@/components/screens/ProjectsScreen";
 import { ReportDetailScreen } from "@/components/screens/ReportDetailScreen";
 import { ReportsScreen } from "@/components/screens/ReportsScreen";
@@ -19,7 +22,7 @@ function PortalShell() {
   if (!hydrated) {
     return (
       <div className="flex min-h-screen">
-        <aside className="w-[var(--sidebar-w)] bg-forest" />
+        <aside className="hidden w-(--sidebar-w) bg-forest md:block" />
         <main className="main flex-1 bg-sage" />
       </div>
     );
@@ -39,6 +42,12 @@ function PortalShell() {
     case "report":
       screen = <ReportDetailScreen role={role} id={route.id} go={go} />;
       break;
+    case "emissions":
+      screen = <EmissionsScreen role={role} go={go} />;
+      break;
+    case "showcase":
+      screen = <ShowcaseScreen role={role} go={go} />;
+      break;
     case "settings":
       screen = <SettingsScreen role={role} go={go} />;
       break;
@@ -49,7 +58,7 @@ function PortalShell() {
   return (
     <div className="flex min-h-screen">
       <Sidebar navKey={navKey} go={go} newCount={newCount} loading={loading} />
-      <main className="main ml-[var(--sidebar-w)] min-w-0 flex-1 px-10 pb-20 pt-[30px]">
+      <main className="main min-w-0 flex-1 px-4 pb-28 pt-6 md:ml-(--sidebar-w) md:px-8 md:pb-20 md:pt-7.5 lg:px-10">
         {loading ? (
           <LoadingState label="Loading portal data…" />
         ) : error ? (
@@ -60,6 +69,7 @@ function PortalShell() {
           </div>
         )}
       </main>
+      <BottomNav navKey={navKey} go={go} newCount={newCount} />
     </div>
   );
 }

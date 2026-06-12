@@ -78,9 +78,16 @@ body {
   height: 100%;
 }
 
+/* Enable safe-area env() for iPhone notch / home indicator */
+html {
+  -webkit-text-size-adjust: 100%;
+  viewport-fit: cover;
+}
+
 body {
   font-family: var(--font-hanken), var(--sans);
-  background: var(--sage);
+  background: linear-gradient(165deg, var(--sage-2) 0%, var(--sage) 55%, var(--sage) 100%);
+  background-attachment: fixed;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

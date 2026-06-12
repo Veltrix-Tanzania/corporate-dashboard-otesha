@@ -11,7 +11,8 @@ export function MiniSpark({
 }) {
   const max = Math.max(...series);
   const min = Math.min(...series);
-  const x = (i: number) => (w / (series.length - 1)) * i;
+  const steps = Math.max(series.length - 1, 1);
+  const x = (i: number) => (w / steps) * i;
   const y = (v: number) => h - 3 - ((v - min) / (max - min || 1)) * (h - 6);
   const lp = series.map((v, i) => `${i ? "L" : "M"}${x(i)} ${y(v)}`).join(" ");
 

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Hanken_Grotesk, Newsreader } from "next/font/google";
 import "./globals.css";
 
@@ -23,6 +23,12 @@ const ibmMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Otesha — Corporate Portal",
   description: "Corporate sustainability portal for monitoring tree-planting projects",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

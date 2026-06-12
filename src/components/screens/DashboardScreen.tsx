@@ -8,6 +8,7 @@ import { BarCompareChart } from "@/components/charts/BarCompareChart";
 import { DonutStat } from "@/components/charts/DonutStat";
 import { TreesSurvivalChart } from "@/components/charts/TreesSurvivalChart";
 import { SiteMap } from "@/components/maps/SiteMap";
+import { VegetationMap } from "@/components/maps/VegetationMap";
 import { AlertBanner } from "@/components/ui/AlertBanner";
 import { Button } from "@/components/ui/Button";
 import { ImpactDateFilter } from "@/components/ui/ImpactDateFilter";
@@ -19,6 +20,8 @@ import { usePortal } from "@/providers/PortalProvider";
 import { compactTZS } from "@/lib/format";
 import { DEFAULT_IMPACT_RANGE, METRICS } from "@/lib/constants";
 import { getImpactPeriodPhrase, sliceMetricByRange } from "@/lib/metrics";
+import { siteCenter } from "@/lib/geo";
+import { printReportPDF } from "@/lib/reportPdf";
 import type { ImpactDateRange, MetricKey, Role, Route, Site } from "@/lib/types";
 
 function ImpactOverTime({
@@ -39,17 +42,17 @@ function ImpactOverTime({
       : "+" + Math.round(s.impact).toLocaleString();
 
   return (
-    <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-[18px]">
-        <div className="flex flex-wrap gap-2">
+    <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
+        <div className="flex flex-wrap gap-1.5">
           {METRICS.map((x) => (
             <button
               key={x.key}
               onClick={() => setMetric(x.key)}
-              className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold ${
+              className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold transition-all ${
                 metric === x.key
-                  ? "border-transparent bg-ink text-[#eaf3ec]"
-                  : "border border-line bg-card text-muted"
+                  ? "bg-ink text-[#eaf3ec] shadow-sm"
+                  : "border border-line bg-card text-muted hover:border-[rgba(20,50,40,.15)] hover:text-ink"
               }`}
             >
               {x.label}
@@ -59,9 +62,9 @@ function ImpactOverTime({
         <ImpactDateFilter value={impactRange} onChange={setImpactRange} />
       </div>
       <div className="p-6">
-        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-3">
+        <div className="mb-1.5 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="font-serif text-[34px] font-semibold leading-none" style={{ color: m.color }}>
+            <div className="font-serif text-[28px] font-semibold leading-none sm:text-[34px]" style={{ color: m.color }}>
               {big}
               {m.unit}
             </div>
@@ -124,27 +127,26 @@ export function DashboardScreen({
 
   return (
     <div className="mx-auto max-w-[1180px]">
-      <div className="mb-[22px] flex items-end justify-between gap-5">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.11em] text-muted">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(20,50,40,.08)] bg-card px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-ok-ink" />
             Sustainability portfolio
           </div>
-          <h1 className="mt-1.5 font-serif text-[30px] font-semibold leading-[1.05] tracking-[-0.01em]">
+          <h1 className="mt-2 font-serif text-[26px] font-semibold leading-[1.05] tracking-[-0.015em] text-ink md:text-[30px]">
             {D.company.account}
           </h1>
-          <p className="mt-1.5 text-sm text-muted">
-            Here&apos;s how all of CRDB&apos;s tree-planting work is doing right now.
+          <p className="mt-1.5 text-[13.5px] text-muted">
+            Live view of all tree-planting projects and their impact.
           </p>
         </div>
-        <div className="text-right">
+        <div className="flex flex-wrap items-center gap-2 sm:text-right">
           <RoleToggle role={role} setRole={(r) => go({ screen: "dashboard", role: r })} />
-          <div className="mt-3 flex justify-end gap-2.5">
-            <ImpactDateFilter value={impactRange} onChange={setImpactRange} />
-            <Button variant="primary" size="sm" onClick={() => go({ screen: "reports" })}>
-              <Download size={15} strokeWidth={1.9} />
-              {exec ? "Get the brief" : "Export data"}
-            </Button>
-          </div>
+          <ImpactDateFilter value={impactRange} onChange={setImpactRange} />
+          <Button variant="primary" size="sm" onClick={() => go({ screen: "reports" })}>
+            <Download size={15} strokeWidth={1.9} />
+            {exec ? "Get the brief" : "Export data"}
+          </Button>
         </div>
       </div>
 
@@ -153,7 +155,7 @@ export function DashboardScreen({
         onView={() => go({ screen: "report", id: D.alerts[0].reportId, role })}
       />
 
-      <div className="mt-4 grid grid-cols-4 gap-4">
+      <div className="mt-4 grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         <KPI
           icon={Layers}
           label="Active projects"
@@ -194,15 +196,12 @@ export function DashboardScreen({
         />
       </div>
 
-      <SectionTitle>Impact over time</SectionTitle>
-      <ImpactOverTime impactRange={impactRange} setImpactRange={setImpactRange} />
-
-      {exec ? (
+      {exec && (
         <>
           <SectionTitle>The short version</SectionTitle>
           <div className="fade-in rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card p-6 shadow-[var(--shadow)]">
-            <div className="flex flex-wrap items-start gap-6">
-              <div className="min-w-[320px] flex-[1_1_420px]">
+            <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:items-start">
+              <div className="min-w-0 flex-[1_1_280px]">
                 <p className="font-serif text-xl leading-[1.55] text-ink [text-wrap:pretty]">
                   {D.company.description ?? (
                     <>
@@ -215,7 +214,12 @@ export function DashboardScreen({
                 <div className="mt-5 flex flex-wrap gap-3">
                   <Button
                     variant="primary"
-                    onClick={() => go({ screen: "report", id: "RPT-2026-0142", role })}
+                    onClick={() => {
+                      const r = D.reports[0];
+                      const p = D.projects.find((pr) => pr.id === r?.projectId);
+                      if (r && p) printReportPDF(r, p);
+                      else go({ screen: "reports", role });
+                    }}
                   >
                     <Download size={16} strokeWidth={1.9} /> Download the one-pager (PDF)
                   </Button>
@@ -236,10 +240,17 @@ export function DashboardScreen({
               </div>
             </div>
           </div>
+        </>
+      )}
 
-          <div className="mt-5 grid grid-cols-[1.3fr_1fr] gap-5">
-            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-              <div className="flex items-center justify-between border-b border-line px-6 py-[18px]">
+      <SectionTitle>Impact over time</SectionTitle>
+      <ImpactOverTime impactRange={impactRange} setImpactRange={setImpactRange} />
+
+      {exec ? (
+        <>
+          <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1.3fr_1fr]">
+            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+              <div className="flex items-center justify-between border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
                 <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">
                   What we spent vs what it&apos;s worth
                 </h3>
@@ -257,18 +268,23 @@ export function DashboardScreen({
                 </div>
               </div>
             </div>
-            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-              <div className="border-b border-line px-6 py-[18px]">
+            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+              <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
                 <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">
                   Where the work is happening
                 </h3>
+                <p className="mt-0.5 text-[11.5px] text-muted">
+                  Sentinel-2 · live NDVI mosaic
+                </p>
               </div>
               <div className="p-6">
-                <SiteMap
-                  sites={allSites}
+                <VegetationMap
+                  lat={siteCenter(allSites).lat}
+                  lng={siteCenter(allSites).lng}
                   height={300}
-                  activeName={hover?.name}
-                  onHover={setHover}
+                  label="Portfolio · NDVI"
+                  zoom={12}
+                  radius={1200}
                 />
               </div>
             </div>
@@ -288,9 +304,9 @@ export function DashboardScreen({
           >
             How the projects are doing
           </SectionTitle>
-          <div className="grid grid-cols-2 gap-5">
-            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-              <div className="flex items-center justify-between border-b border-line px-6 py-[18px]">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+              <div className="flex items-center justify-between border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
                 <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">
                   Trees planted and how many survived
                 </h3>
@@ -308,8 +324,8 @@ export function DashboardScreen({
                 </div>
               </div>
             </div>
-            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-              <div className="flex items-center justify-between border-b border-line px-6 py-[18px]">
+            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+              <div className="flex items-center justify-between border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
                 <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Tree cover gain</h3>
                 <span className="text-[12.5px] text-muted">+{P.canopyDelta}% so far</span>
               </div>
@@ -329,9 +345,9 @@ export function DashboardScreen({
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-[1.25fr_1fr] gap-5">
-            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-              <div className="flex items-center justify-between border-b border-line px-6 py-[18px]">
+          <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1.25fr_1fr]">
+            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+              <div className="flex items-center justify-between border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
                 <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Planting sites</h3>
                 <span className="text-[12.5px] text-muted">
                   {allSites.length} sites · {P.locations} locations
@@ -341,8 +357,8 @@ export function DashboardScreen({
                 <SiteMap sites={allSites} height={320} activeName={hover?.name} onHover={setHover} />
               </div>
             </div>
-            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-              <div className="flex items-center justify-between border-b border-line px-6 py-[18px]">
+            <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+              <div className="flex items-center justify-between border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
                 <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">
                   Latest satellite updates
                 </h3>
@@ -384,7 +400,7 @@ export function DashboardScreen({
           </div>
 
           <SectionTitle>What we spent vs what it&apos;s worth</SectionTitle>
-          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
+          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
             <div className="p-6">
               <BarCompareChart data={compareData} />
               <div className="mt-3 flex justify-center gap-5">

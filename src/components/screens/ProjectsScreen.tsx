@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Co2Icon } from "@/components/ui/Co2Icon";
 import { NDVITile } from "@/components/maps/NDVITile";
-import { SiteMap } from "@/components/maps/SiteMap";
+import { VegetationMap } from "@/components/maps/VegetationMap";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ImpactDateFilter } from "@/components/ui/ImpactDateFilter";
@@ -25,9 +25,8 @@ import { usePortal } from "@/providers/PortalProvider";
 import { DEFAULT_IMPACT_RANGE } from "@/lib/constants";
 import { compactTZS } from "@/lib/format";
 import { filterReportsByRange, getImpactPeriodPhrase } from "@/lib/metrics";
-import { deriveNdviSnapshot } from "@/lib/ndvi";
-import { formatCoords } from "@/lib/geo";
-import type { ImpactDateRange, Role, Route, Site } from "@/lib/types";
+import { formatCoords, siteCenter } from "@/lib/geo";
+import type { ImpactDateRange, Role, Route } from "@/lib/types";
 
 export function ProjectsScreen({
   role,
@@ -40,13 +39,16 @@ export function ProjectsScreen({
 
   return (
     <div className="mx-auto max-w-[1180px]">
-      <div className="mb-[22px] flex items-end justify-between gap-5">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.11em] text-muted">Portfolio</div>
-          <h1 className="mt-1.5 font-serif text-[30px] font-semibold leading-[1.05] tracking-[-0.01em]">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(20,50,40,.08)] bg-card px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-deep" />
+            Portfolio
+          </div>
+          <h1 className="mt-2 font-serif text-[26px] font-semibold leading-[1.05] tracking-[-0.015em] text-ink md:text-[30px]">
             Projects
           </h1>
-          <p className="mt-1.5 text-sm text-muted">Every tree-planting project {company.name} has on the go.</p>
+          <p className="mt-1.5 text-[13.5px] text-muted">Every tree-planting project {company.name} has on the go.</p>
         </div>
         <RoleToggle role={role} setRole={(r) => go({ screen: "projects", role: r })} />
       </div>
@@ -57,17 +59,17 @@ export function ProjectsScreen({
           return (
             <div
               key={p.id}
-              className="cursor-pointer rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)] transition-colors hover:bg-sage-2"
+              className="cursor-pointer rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)] transition-colors hover:bg-sage-2"
               onClick={() => go({ screen: "project", id: p.id, role })}
             >
-              <div className="flex items-center justify-between gap-5 p-6">
+              <div className="flex items-center justify-between gap-4 p-4 sm:p-6">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-serif text-[19px] font-semibold">{p.name}</h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-serif text-[17px] font-semibold sm:text-[19px]">{p.name}</h3>
                     <Badge kind="active">{p.status}</Badge>
                   </div>
                   <p className="mt-1 text-[12.5px] text-muted">{p.blurb}</p>
-                  <div className="mt-4 flex flex-wrap gap-5">
+                  <div className="mt-3 flex flex-wrap gap-3 sm:gap-5">
                     <span className="flex items-center gap-2 text-[12.5px]">
                       <CircleDollarSign size={15} strokeWidth={1.8} className="text-muted" />
                       <b>{compactTZS(p.budgetTZS)}</b>
@@ -93,7 +95,7 @@ export function ProjectsScreen({
                     )}
                   </div>
                 </div>
-                <div className="w-[200px] max-w-[200px] flex-none">
+                <div className="hidden w-[160px] flex-none sm:block md:w-[200px]">
                   <NDVITile seed={(p.id.length % 6) + 1} height={108} radius={12} label={p.short} mini />
                 </div>
                 <ChevronRight size={20} strokeWidth={2} className="text-muted-2" />
@@ -118,16 +120,12 @@ export function ProjectDetailScreen({
 }) {
   const { projects, projectById, reports } = usePortal();
   const p = projectById(id ?? "") ?? projects[0];
-  const [hover, setHover] = useState<Site | null>(null);
   const [impactRange, setImpactRange] = useState<ImpactDateRange>(DEFAULT_IMPACT_RANGE);
   const exec = role === "exec";
   const rel = filterReportsByRange(
     reports.filter((r) => r.projectId === p.id),
     impactRange,
   );
-  const ndvi = deriveNdviSnapshot(p, impactRange, reports);
-  const ndviVariant = `${impactRange.period}-${impactRange.customStart ?? ""}-${impactRange.customEnd ?? ""}`;
-
   return (
     <div className="mx-auto max-w-[1180px]">
       <button
@@ -137,8 +135,8 @@ export function ProjectDetailScreen({
         <ChevronLeft size={15} strokeWidth={2.2} /> All Projects
       </button>
 
-      <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-        <div className="flex items-start justify-between gap-5 p-6">
+      <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+        <div className="flex flex-wrap items-start justify-between gap-4 p-4 sm:p-6">
           <div>
             <div className="flex items-center gap-3">
               <h1 className="font-serif text-[26px] font-semibold">{p.name}</h1>
@@ -165,7 +163,7 @@ export function ProjectDetailScreen({
           <RoleToggle role={role} setRole={(r) => go({ screen: "project", id: p.id, role: r })} />
         </div>
         <div className="px-6 pb-6">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
             {[
               {
                 icon: CircleDollarSign,
@@ -212,112 +210,72 @@ export function ProjectDetailScreen({
         </div>
       </div>
 
-      <div className="mt-5 rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-[18px]">
+      <div className="mt-5 rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
           <div>
             <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">
               Satellite imagery · NDVI
             </h3>
             <span className="mt-1 block text-[12.5px] text-muted">
-              Sentinel-2 · last pass {ndvi.passDate}
+              Sentinel-2 · live mosaic composite
             </span>
           </div>
           <ImpactDateFilter value={impactRange} onChange={setImpactRange} />
         </div>
         <div className="p-6">
-          <NDVITile
-            seed={ndvi.seed}
-            ndvi={ndvi.ndviNow}
+          <VegetationMap
+            lat={siteCenter(p.sites).lat}
+            lng={siteCenter(p.sites).lng}
             height={320}
-            label={`NDVI · ${p.short} · ${ndvi.passDate}`}
-            variantKey={ndviVariant}
+            label={`${p.short} · NDVI`}
+            zoom={13}
+            radius={800}
           />
-          {!exec && (
-            <div className="mt-4 grid grid-cols-4 gap-4">
-              {[
-                { label: "NDVI (now)", value: String(ndvi.ndviNow) },
-                { label: "NDVI (baseline)", value: String(ndvi.ndviBase) },
-                { label: "Cloud cover", value: `${ndvi.cloud}%` },
-                { label: "Tile", value: ndvi.tile, mono: true },
-              ].map((t) => (
-                <div key={t.label} className="rounded-[var(--r-md)] bg-tile p-4">
-                  <div className="text-xs font-semibold text-muted">{t.label}</div>
-                  <div className={`mt-2 font-serif text-[22px] font-semibold ${t.mono ? "font-mono text-base" : ""}`}>
-                    {t.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
-      <div
-        className={`mt-5 grid gap-5 ${exec ? "grid-cols-1" : "grid-cols-[1.1fr_1fr]"}`}
-      >
-        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-          <div className="flex items-center justify-between border-b border-line px-6 py-[18px]">
-            <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Planting locations</h3>
-            <span className="text-[12.5px] text-muted">{p.sites.length} sites</span>
+      {!exec && (
+        <div className="mt-5 rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+          <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
+            <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Site breakdown</h3>
           </div>
-          <div className="p-6">
-            <SiteMap
-              sites={p.sites}
-              height={exec ? 340 : 320}
-              activeName={hover?.name}
-              onHover={setHover}
-            />
+          <div className="overflow-hidden">
+            <table className="w-full border-collapse text-[13px]">
+              <thead>
+                <tr>
+                  <th className="border-b border-line px-4 py-2.5 text-left text-[10.5px] font-bold uppercase tracking-[0.08em] text-muted">
+                    Site
+                  </th>
+                  <th className="border-b border-line px-4 py-2.5 text-right text-[10.5px] font-bold uppercase tracking-[0.08em] text-muted">
+                    Trees
+                  </th>
+                  <th className="border-b border-line px-4 py-2.5 text-right text-[10.5px] font-bold uppercase tracking-[0.08em] text-muted">
+                    Survival
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {p.sites.map((s) => (
+                  <tr key={s.name} className="transition-colors hover:bg-sage-2">
+                    <td className="border-b border-line px-4 py-3 text-ink-2">
+                      <b>{s.name}</b>
+                      <div className="mt-0.5 font-mono text-[11px] text-muted-2">
+                        {formatCoords(s.lat, s.lng)}
+                      </div>
+                    </td>
+                    <td className="border-b border-line px-4 py-3 text-right tabular-nums text-ink-2">
+                      {s.trees.toLocaleString()}
+                    </td>
+                    <td className="border-b border-line px-4 py-3 text-right tabular-nums">
+                      <span className="font-bold text-ok-ink">{Math.round(s.surv * 100)}%</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-        {!exec && (
-          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-            <div className="border-b border-line px-6 py-[18px]">
-              <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Site breakdown</h3>
-            </div>
-            <div className="overflow-hidden">
-              <table className="w-full border-collapse text-[13px]">
-                <thead>
-                  <tr>
-                    <th className="border-b border-line px-4 py-2.5 text-left text-[10.5px] font-bold uppercase tracking-[0.08em] text-muted">
-                      Site
-                    </th>
-                    <th className="border-b border-line px-4 py-2.5 text-right text-[10.5px] font-bold uppercase tracking-[0.08em] text-muted">
-                      Trees
-                    </th>
-                    <th className="border-b border-line px-4 py-2.5 text-right text-[10.5px] font-bold uppercase tracking-[0.08em] text-muted">
-                      Survival
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {p.sites.map((s) => (
-                    <tr
-                      key={s.name}
-                      className="transition-colors"
-                      style={{ background: hover?.name === s.name ? "var(--sage-2)" : "transparent" }}
-                      onMouseEnter={() => setHover(s)}
-                      onMouseLeave={() => setHover(null)}
-                    >
-                      <td className="border-b border-line px-4 py-3 text-ink-2">
-                        <b>{s.name}</b>
-                        <div className="mt-0.5 font-mono text-[11px] text-muted-2">
-                          {formatCoords(s.lat, s.lng)}
-                        </div>
-                      </td>
-                      <td className="border-b border-line px-4 py-3 text-right tabular-nums text-ink-2">
-                        {s.trees.toLocaleString()}
-                      </td>
-                      <td className="border-b border-line px-4 py-3 text-right tabular-nums">
-                        <span className="font-bold text-ok-ink">{Math.round(s.surv * 100)}%</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
 
       <SectionTitle
         action={
@@ -331,7 +289,7 @@ export function ProjectDetailScreen({
       <p className="mb-3 text-[12.5px] text-muted">
         {rel.length} update{rel.length === 1 ? "" : "s"} {getImpactPeriodPhrase(impactRange)}
       </p>
-      <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
+      <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
         {rel.length ? (
           rel.map((r) => {
             const up = r.trigger.dir === "up";

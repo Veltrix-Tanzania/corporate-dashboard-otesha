@@ -50,14 +50,17 @@ export function SettingsScreen({
 
   return (
     <div className="mx-auto max-w-[1180px]">
-      <div className="mb-[22px] flex items-end justify-between gap-5">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.11em] text-muted">Account</div>
-          <h1 className="mt-1.5 font-serif text-[30px] font-semibold leading-[1.05] tracking-[-0.01em]">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(20,50,40,.08)] bg-card px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-muted-2" />
+            Account
+          </div>
+          <h1 className="mt-2 font-serif text-[26px] font-semibold leading-[1.05] tracking-[-0.015em] text-ink md:text-[30px]">
             Report settings
           </h1>
-          <p className="mt-1.5 text-sm text-muted">
-            Decide how often we save a satellite image, what each update shows, and who gets it.
+          <p className="mt-1.5 text-[13.5px] text-muted">
+            Control how often images are saved, what each update shows, and who gets notified.
           </p>
         </div>
         <RoleToggle role={role} setRole={(r) => go({ screen: "settings", role: r })} />
@@ -65,10 +68,10 @@ export function SettingsScreen({
 
       {error && <p className="mb-4 text-sm text-[#8a3320]">{error}</p>}
 
-      <div className="grid grid-cols-[1.3fr_1fr] gap-5">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.3fr_1fr]">
         <div className="grid gap-5">
-          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-            <div className="flex items-center justify-between border-b border-line px-6 py-[18px]">
+          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+            <div className="flex items-center justify-between border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
               <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Satellite images</h3>
               <span className="text-[12.5px] text-muted">Sentinel-2 · ~5 day revisit</span>
             </div>
@@ -96,8 +99,8 @@ export function SettingsScreen({
             </SettingRow>
           </div>
 
-          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-            <div className="border-b border-line px-6 py-[18px]">
+          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+            <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
               <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">
                 What each update shows
               </h3>
@@ -125,8 +128,8 @@ export function SettingsScreen({
             </SettingRow>
           </div>
 
-          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-            <div className="border-b border-line px-6 py-[18px]">
+          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+            <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
               <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">
                 How updates are shared
               </h3>
@@ -150,8 +153,8 @@ export function SettingsScreen({
         </div>
 
         <div className="grid content-start gap-5">
-          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-            <div className="border-b border-line px-6 py-[18px]">
+          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+            <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
               <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Who gets updates</h3>
             </div>
             <div className="grid gap-4 p-6">
@@ -192,8 +195,8 @@ export function SettingsScreen({
             </div>
           </div>
 
-          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
-            <div className="border-b border-line px-6 py-[18px]">
+          <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
+            <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-6 py-4">
               <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-ink-2">Email digest</h3>
             </div>
             <div className="p-6">

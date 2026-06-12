@@ -11,8 +11,8 @@ export function TreesSurvivalChart({ data }: { data: TreeData[] }) {
   const padB = 46;
   const iw = W - padL - padR;
   const ih = H - padT - padB;
-  const maxT = Math.max(...data.map((d) => d.trees)) * 1.15;
-  const groupW = iw / data.length;
+  const maxT = (Math.max(...data.map((d) => d.trees)) * 1.15) || 1;
+  const groupW = iw / (data.length || 1);
   const barW = Math.min(46, groupW * 0.5);
   const yT = (v: number) => padT + ih - (v / maxT) * ih;
   const sMin = 0.6;
@@ -62,7 +62,7 @@ export function TreesSurvivalChart({ data }: { data: TreeData[] }) {
               x={cx - barW / 2}
               y={yT(d.trees)}
               width={barW}
-              height={padT + ih - yT(d.trees)}
+              height={Math.max(0, padT + ih - yT(d.trees))}
               rx="4"
               fill="oklch(0.74 0.05 152)"
             />

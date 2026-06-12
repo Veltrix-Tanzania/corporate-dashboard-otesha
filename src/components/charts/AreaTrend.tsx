@@ -24,8 +24,9 @@ export function AreaTrend({
   const padB = 36;
   const iw = W - padL - padR;
   const ih = H - padT - padB;
-  const max = Math.max(...series) * 1.15 || 1;
-  const x = (i: number) => padL + (iw / (series.length - 1)) * i;
+  const max = (Math.max(...series) * 1.15) || 1;
+  const steps = Math.max(series.length - 1, 1);
+  const x = (i: number) => padL + (iw / steps) * i;
   const y = (v: number) => padT + ih - (v / max) * ih;
   const lp = series.map((v, i) => `${i ? "L" : "M"}${x(i)} ${y(v)}`).join(" ");
   const ap = `${lp} L ${x(series.length - 1)} ${padT + ih} L ${x(0)} ${padT + ih} Z`;

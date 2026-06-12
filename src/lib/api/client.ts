@@ -14,7 +14,7 @@ function getBaseUrl(): string {
   // Browser: relative /proxy path (same origin → Next.js rewrites to backend)
   // Server: full URL needed for SSR/RSC, but this client is client-only
   if (typeof window !== "undefined") return "/proxy/api/v1";
-  const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
+  const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://panda-project-be-production.up.railway.app";
   return `${backendUrl.replace(/\/$/, "")}/api/v1`;
 }
 

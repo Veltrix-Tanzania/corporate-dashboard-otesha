@@ -40,26 +40,26 @@ export function ReportsScreen({
 
   return (
     <div className="mx-auto max-w-[1180px]">
-      <div className="mb-[22px] flex items-end justify-between gap-5">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.11em] text-muted">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(20,50,40,.08)] bg-card px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.55_0.1_230)]" />
             Satellite updates
           </div>
-          <h1 className="mt-1.5 font-serif text-[30px] font-semibold leading-[1.05] tracking-[-0.01em]">
+          <h1 className="mt-2 font-serif text-[26px] font-semibold leading-[1.05] tracking-[-0.015em] text-ink md:text-[30px]">
             Reports
           </h1>
-          <p className="mt-1.5 text-sm text-muted">
-            Every satellite image we save of your projects becomes a short update. Filter them by date
-            or project.
+          <p className="mt-1.5 text-[13.5px] text-muted">
+            Every satellite image saved for your projects, filtered by date or site.
           </p>
         </div>
         <RoleToggle role={role} setRole={(r) => go({ screen: "reports", role: r })} />
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
-        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card p-5 shadow-[var(--shadow)]">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card p-5 shadow-[var(--shadow)]">
           <div className="mb-2 flex items-center gap-3">
-            <div className="grid h-[38px] w-[38px] place-items-center rounded-[var(--r-sm)] bg-tile text-green-deep">
+            <div className="grid h-9 w-9 place-items-center rounded-sm bg-linear-to-br from-[#e8f3e9] to-[#d8ead9] text-green-deep shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_1px_3px_rgba(20,50,40,.1)]">
               <FileText size={19} strokeWidth={1.8} />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Saved updates</div>
@@ -67,9 +67,9 @@ export function ReportsScreen({
           <div className="font-serif text-[30px] font-semibold leading-none">{reports.length}</div>
           <div className="mt-1.5 text-[12.5px] text-muted">across all projects</div>
         </div>
-        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card p-5 shadow-[var(--shadow)]">
+        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card p-5 shadow-[var(--shadow)]">
           <div className="mb-2 flex items-center gap-3">
-            <div className="grid h-[38px] w-[38px] place-items-center rounded-[var(--r-sm)] bg-new-bg text-new-ink">
+            <div className="grid h-9 w-9 place-items-center rounded-sm bg-linear-to-br from-new-bg to-[#c8d8ec] text-new-ink shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_1px_3px_rgba(20,50,40,.1)]">
               <Bell size={18} strokeWidth={1.8} />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Not seen yet</div>
@@ -77,9 +77,9 @@ export function ReportsScreen({
           <div className="font-serif text-[30px] font-semibold leading-none">{newCount}</div>
           <div className="mt-1.5 text-[12.5px] text-muted">new since you last looked</div>
         </div>
-        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card p-5 shadow-[var(--shadow)]">
+        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card p-5 shadow-[var(--shadow)]">
           <div className="mb-2 flex items-center gap-3">
-            <div className="grid h-[38px] w-[38px] place-items-center rounded-[var(--r-sm)] bg-tile text-green-deep">
+            <div className="grid h-9 w-9 place-items-center rounded-sm bg-linear-to-br from-[#e8f3e9] to-[#d8ead9] text-green-deep shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_1px_3px_rgba(20,50,40,.1)]">
               <Satellite size={18} strokeWidth={1.8} />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Last image saved</div>
@@ -87,9 +87,9 @@ export function ReportsScreen({
           <div className="font-serif text-[22px] font-semibold leading-none">Jun 3</div>
           <div className="mt-1.5 text-[12.5px] text-muted">Sentinel-2 · 4% cloud</div>
         </div>
-        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card p-5 shadow-[var(--shadow)]">
+        <div className="rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card p-5 shadow-[var(--shadow)]">
           <div className="mb-2 flex items-center gap-3">
-            <div className="grid h-[38px] w-[38px] place-items-center rounded-[var(--r-sm)] bg-tile text-green-deep">
+            <div className="grid h-9 w-9 place-items-center rounded-sm bg-linear-to-br from-[#e8f3e9] to-[#d8ead9] text-green-deep shadow-[inset_0_1px_1px_rgba(255,255,255,.9),0_1px_3px_rgba(20,50,40,.1)]">
               <Download size={18} strokeWidth={1.8} />
             </div>
             <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Filed for ESG</div>
@@ -148,17 +148,17 @@ export function ReportsScreen({
           : ""}
       </div>
 
-      <div className="mt-3 rounded-[var(--r-lg)] border border-[rgba(20,50,40,.04)] bg-card shadow-[var(--shadow)]">
+      <div className="mt-3 rounded-[var(--r-lg)] border border-[rgba(20,50,40,.06)] bg-card shadow-[var(--shadow)]">
         {list.map((r) => {
           const p = projectById(r.projectId)!;
           const up = r.trigger.dir === "up";
           return (
             <div
               key={r.id}
-              className="flex cursor-pointer items-center gap-[18px] border-b border-line px-5 py-4 transition-colors last:border-b-0 hover:bg-sage-2"
+              className="flex cursor-pointer items-center gap-3 border-b border-line px-4 py-4 transition-colors last:border-b-0 hover:bg-sage-2 sm:gap-[18px] sm:px-5"
               onClick={() => go({ screen: "report", id: r.id, role })}
             >
-              <div className="w-24 flex-none">
+              <div className="hidden w-24 flex-none sm:block">
                 <NDVITile seed={(p.id.length % 6) + 1} height={62} radius={10} label="" mini />
               </div>
               <div className="min-w-0 flex-1">
