@@ -16,8 +16,13 @@ let initPromise: Promise<void> | null = null;
 export function initEarthEngine(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = new Promise<void>((resolve, reject) => {
-    const filePath = path.join(process.cwd(), "cyphidprojectportal-ad3bf568eb60.json");
-    const key = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    let key: object;
+    if (process.env.GCP_SERVICE_ACCOUNT) {
+      key = JSON.parse(process.env.GCP_SERVICE_ACCOUNT);
+    } else {
+      const filePath = path.join(process.cwd(), "cyphidprojectportal-ad3bf568eb60.json");
+      key = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    }
     ee.data.authenticateViaPrivateKey(
       key,
       () =>
@@ -39,6 +44,7 @@ export function initEarthEngine(): Promise<void> {
   return initPromise;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function maskClouds(image: any) {
   return image
     .updateMask(image.select("MSK_CLDPRB").lt(20))
