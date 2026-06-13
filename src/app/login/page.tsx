@@ -131,7 +131,7 @@ export default function LoginPage() {
           <div className="w-14 h-14 rounded-full bg-gradient-to-b from-[#3a6351] to-[#1f4037] flex items-center justify-center mb-4 shadow-lg">
             <TreePine className="w-7 h-7 text-[#95bd91]" />
           </div>
-          <h1 className="text-3xl font-bold text-[#1f4037] font-serif">Panda Tree</h1>
+          <h1 className="text-3xl font-bold text-[#1f4037] font-serif">Otesha</h1>
           <p className="text-[#3a6351] text-sm mt-1 font-medium tracking-wide uppercase">
             Corporate Portal
           </p>
