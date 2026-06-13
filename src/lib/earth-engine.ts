@@ -1,6 +1,5 @@
 import ee from "@google/earthengine";
-import fs from "node:fs";
-import path from "node:path";
+import { getGcpKey } from "./gcp-key";
 
 const NDVI_START_DATE = "2023-01-01";
 
@@ -16,13 +15,9 @@ let initPromise: Promise<void> | null = null;
 export function initEarthEngine(): Promise<void> {
   if (initPromise) return initPromise;
   initPromise = new Promise<void>((resolve, reject) => {
-    let key: object;
-    if (process.env.GCP_SERVICE_ACCOUNT) {
-      key = JSON.parse(process.env.GCP_SERVICE_ACCOUNT);
-    } else {
-      const filePath = path.join(process.cwd(), "cyphidprojectportal-ad3bf568eb60.json");
-      key = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    }
+    const key = process.env.GCP_SERVICE_ACCOUNT
+      ? JSON.parse(process.env.GCP_SERVICE_ACCOUNT)
+      : getGcpKey();
     ee.data.authenticateViaPrivateKey(
       key,
       () =>
