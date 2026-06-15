@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Download, FileText, Layers, TrendingUp, TreePine } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AlertTriangle, ArrowRight, Download, FileText, Layers, ShoppingCart, TrendingUp, TreePine } from "lucide-react";
 import { Co2Icon } from "@/components/ui/Co2Icon";
 import { AreaTrend } from "@/components/charts/AreaTrend";
 import { BarCompareChart } from "@/components/charts/BarCompareChart";
@@ -23,6 +23,191 @@ import { getImpactPeriodPhrase, sliceMetricByRange } from "@/lib/metrics";
 import { siteCenter } from "@/lib/geo";
 import { printReportPDF } from "@/lib/reportPdf";
 import type { ImpactDateRange, MetricKey, Role, Route, Site } from "@/lib/types";
+
+type EmissionSnapshot = {
+  totalT: number;
+  treesNeeded: number;
+  scope1T: number;
+  scope2T: number;
+  scope3T: number;
+  savedAt: string;
+};
+
+function useEmissionSnapshot(): EmissionSnapshot | null {
+  const [snap, setSnap] = useState<EmissionSnapshot | null>(null);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("otesha_emission_snapshot");
+      if (raw) setSnap(JSON.parse(raw) as EmissionSnapshot);
+    } catch {
+      // ignore
+    }
+  }, []);
+  return snap;
+}
+
+function EmissionInsightsSection({
+  snap,
+  portfolioTrees,
+  portfolioCo2,
+  go,
+}: {
+  snap: EmissionSnapshot | null;
+  portfolioTrees: number;
+  portfolioCo2: number;
+  go: (next: Partial<Route>) => void;
+}) {
+  const KG_PER_TREE = 18;
+  const portfolioOffset = +(portfolioTrees * KG_PER_TREE / 1000).toFixed(2);
+
+  if (!snap || snap.totalT === 0) {
+    return (
+      <div className="mt-4 flex items-center justify-between gap-4 rounded-(--r-lg) border border-dashed border-[rgba(20,50,40,.12)] bg-card px-6 py-5 shadow-(--shadow)">
+        <div className="flex items-center gap-3">
+          <div className="grid h-9 w-9 flex-none place-items-center rounded-lg bg-warn-bg text-warn-ink">
+            <AlertTriangle size={16} strokeWidth={2} />
+          </div>
+          <div>
+            <div className="text-[13.5px] font-semibold text-ink">Emission data not submitted yet</div>
+            <div className="text-[12px] text-muted">Run the emissions calculator to see your carbon balance here.</div>
+          </div>
+        </div>
+        <button
+          onClick={() => go({ screen: "emissions" })}
+          className="flex-none inline-flex items-center gap-1.5 rounded-lg border border-line bg-tile px-4 py-2 text-[12.5px] font-semibold text-ink-2 transition-colors hover:bg-[#eaf4ec] hover:text-ink"
+        >
+          Calculate now <ArrowRight size={13} strokeWidth={2.2} />
+        </button>
+      </div>
+    );
+  }
+
+  const surplus = portfolioOffset >= snap.totalT;
+  const gapT = +(snap.totalT - portfolioOffset).toFixed(2);
+  const treesGap = Math.max(0, snap.treesNeeded - portfolioTrees);
+  const covered = Math.min(100, Math.round((portfolioOffset / snap.totalT) * 100));
+
+  const biggestScope = [
+    { label: "Direct (Scope 1)", t: snap.scope1T },
+    { label: "Electricity (Scope 2)", t: snap.scope2T },
+    { label: "Travel (Scope 3)", t: snap.scope3T },
+  ].sort((a, b) => b.t - a.t)[0];
+
+  return (
+    <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+      {/* Panel 1 — what Otesha gives them */}
+      <div className="rounded-(--r-lg) border border-[rgba(20,50,40,.06)] bg-card shadow-(--shadow)">
+        <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-5 py-3.5">
+          <div className="flex items-center gap-2">
+            <TreePine size={13} strokeWidth={2} className="text-ok-ink" />
+            <h3 className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-ink-2">Otesha is delivering</h3>
+          </div>
+        </div>
+        <div className="space-y-3 p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-[12.5px] text-muted">Trees in the ground</span>
+            <span className="font-semibold text-ink">{portfolioTrees.toLocaleString()}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[12.5px] text-muted">CO₂ stored (portfolio)</span>
+            <span className="font-semibold text-ink">{portfolioCo2.toLocaleString()} t</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[12.5px] text-muted">Annual offset capacity</span>
+            <span className="font-semibold text-ok-ink">{portfolioOffset.toFixed(1)} tCO₂e / yr</span>
+          </div>
+          <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-tile">
+            <div
+              className="h-full rounded-full bg-ok-ink transition-all duration-700"
+              style={{ width: `${covered}%` }}
+            />
+          </div>
+          <div className="text-[11.5px] text-muted">{covered}% of your emissions covered</div>
+        </div>
+      </div>
+
+      {/* Panel 2 — emission report highlight */}
+      <div className="rounded-(--r-lg) border border-[rgba(20,50,40,.06)] bg-card shadow-(--shadow)">
+        <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-5 py-3.5">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={13} strokeWidth={2} className="text-warn-ink" />
+            <h3 className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-ink-2">Emission snapshot</h3>
+          </div>
+        </div>
+        <div className="space-y-3 p-5">
+          <div>
+            <div className="font-serif text-[30px] font-semibold leading-none text-ink">
+              {snap.totalT.toFixed(2)}
+              <small className="ml-1 font-sans text-[13px] font-semibold text-muted">tCO₂e</small>
+            </div>
+            <div className="mt-1 text-[11.5px] text-muted">total carbon generated</div>
+          </div>
+          <div className="flex items-center justify-between rounded-lg bg-tile px-3.5 py-2.5">
+            <span className="text-[12px] text-muted">Biggest source</span>
+            <span className="text-[12px] font-semibold text-ink">{biggestScope.label}</span>
+          </div>
+          <div className="flex items-center justify-between text-[12px]">
+            <span className="text-muted">Scope 1 / 2 / 3</span>
+            <span className="font-medium text-ink-2 tabular-nums">
+              {snap.scope1T.toFixed(2)} · {snap.scope2T.toFixed(2)} · {snap.scope3T.toFixed(2)} t
+            </span>
+          </div>
+          <button
+            onClick={() => go({ screen: "emissions" })}
+            className="mt-1 text-[12px] font-semibold text-green-deep hover:text-ink"
+          >
+            View full report →
+          </button>
+        </div>
+      </div>
+
+      {/* Panel 3 — gap to close (buying trigger) */}
+      <div className={`rounded-(--r-lg) border shadow-(--shadow) ${surplus ? "border-ok-ink/20 bg-ok-bg" : "border-[rgba(180,50,30,.15)] bg-[#fdf6f4]"}`}>
+        <div className={`border-b px-5 py-3.5 ${surplus ? "border-ok-ink/15 bg-ok-bg" : "border-[rgba(180,50,30,.1)] bg-[#fdf0ed]"}`}>
+          <div className="flex items-center gap-2">
+            <ShoppingCart size={13} strokeWidth={2} className={surplus ? "text-ok-ink" : "text-[#8a3320]"} />
+            <h3 className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-ink-2">
+              {surplus ? "You are carbon positive" : "Gap to close"}
+            </h3>
+          </div>
+        </div>
+        <div className="space-y-3 p-5">
+          {surplus ? (
+            <>
+              <div className="font-serif text-[30px] font-semibold leading-none text-ok-ink">
+                +{(portfolioOffset - snap.totalT).toFixed(2)}
+                <small className="ml-1 font-sans text-[13px] font-semibold text-ok-ink/70">tCO₂e surplus</small>
+              </div>
+              <div className="text-[11.5px] text-muted">Your trees absorb more than your emissions.</div>
+              <div className="flex items-center justify-between rounded-lg bg-ok-ink/10 px-3.5 py-2.5">
+                <span className="text-[12px] text-muted">Surplus trees</span>
+                <span className="text-[12px] font-semibold text-ok-ink">+{(portfolioTrees - snap.treesNeeded).toLocaleString()}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="font-serif text-[30px] font-semibold leading-none text-[#8a3320]">
+                {treesGap.toLocaleString()}
+                <small className="ml-1 font-sans text-[13px] font-semibold text-[#8a3320]/70">more trees needed</small>
+              </div>
+              <div className="text-[11.5px] text-muted">to fully offset {gapT.toFixed(2)} tCO₂e / yr</div>
+              <div className="flex items-center justify-between rounded-lg bg-[rgba(180,50,30,.08)] px-3.5 py-2.5">
+                <span className="text-[12px] text-muted">Uncovered emissions</span>
+                <span className="text-[12px] font-semibold text-[#8a3320]">{gapT.toFixed(2)} tCO₂e</span>
+              </div>
+              <button
+                onClick={() => go({ screen: "emissions" })}
+                className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-[#8a3320] px-4 py-2 text-[12.5px] font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                <ShoppingCart size={13} strokeWidth={2} /> Plant more trees
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ImpactOverTime({
   impactRange,
@@ -104,6 +289,7 @@ export function DashboardScreen({
   );
   const [hover, setHover] = useState<Site | null>(null);
   const [impactRange, setImpactRange] = useState<ImpactDateRange>(DEFAULT_IMPACT_RANGE);
+  const emissionSnap = useEmissionSnapshot();
   const periodPhrase = getImpactPeriodPhrase(impactRange);
 
   const roi = Math.round((P.verifiedTZS / P.investedTZS - 1) * 100);
@@ -242,6 +428,14 @@ export function DashboardScreen({
           </div>
         </>
       )}
+
+      <SectionTitle>Carbon balance</SectionTitle>
+      <EmissionInsightsSection
+        snap={emissionSnap}
+        portfolioTrees={P.trees}
+        portfolioCo2={P.co2}
+        go={go}
+      />
 
       <SectionTitle>Impact over time</SectionTitle>
       <ImpactOverTime impactRange={impactRange} setImpactRange={setImpactRange} />

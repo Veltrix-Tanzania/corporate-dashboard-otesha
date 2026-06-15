@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import {
   Calculator,
   Car,
@@ -405,6 +405,22 @@ export function EmissionsScreen({ role, go }: { role: Role; go: (next: Partial<R
 
   const results = useMemo(() => calc(s1, s2, s3, cS1, cS2, cS3), [s1, s2, s3, cS1, cS2, cS3]);
   const { scope1, scope2, scope3, totalKg, totalT, treesNeeded } = results;
+
+  useEffect(() => {
+    if (totalKg === 0) return;
+    try {
+      localStorage.setItem("otesha_emission_snapshot", JSON.stringify({
+        totalT,
+        treesNeeded,
+        scope1T: scope1 / 1000,
+        scope2T: scope2 / 1000,
+        scope3T: scope3 / 1000,
+        savedAt: new Date().toISOString(),
+      }));
+    } catch {
+      // ignore storage errors
+    }
+  }, [totalT, treesNeeded, scope1, scope2, scope3, totalKg]);
 
   const portfolioOffset = +(portfolio.trees * KG_PER_TREE_PER_YEAR / 1000).toFixed(2);
   const netBalance = +(portfolioOffset - totalT).toFixed(2);
