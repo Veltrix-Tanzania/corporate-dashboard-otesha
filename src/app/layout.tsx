@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Hanken_Grotesk, Newsreader } from "next/font/google";
-import { BRAND_FULL_TITLE } from "@/lib/brand";
+import { BRAND_FULL_TITLE, BRAND_LOGO_PATH } from "@/lib/brand";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -24,6 +24,10 @@ const ibmMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: BRAND_FULL_TITLE,
   description: "Corporate sustainability portal for monitoring tree-planting projects",
+  icons: {
+    icon: BRAND_LOGO_PATH,
+    apple: BRAND_LOGO_PATH,
+  },
 };
 
 export const viewport: Viewport = {

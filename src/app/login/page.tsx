@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TreePine, Mail, ArrowLeft } from "lucide-react";
+import { Mail, ArrowLeft } from "lucide-react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { requestOtp, verifyOtp, getMyCompany, NO_COMPANY_ASSIGNMENT_MESSAGE, isNoCompanyAssignmentError } from "@/lib/api/corporate";
 import { ApiError } from "@/lib/api/client";
 import { BRAND_NAME, BRAND_PORTAL_SUBTITLE } from "@/lib/brand";
@@ -146,9 +147,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#d5e3dd] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-b from-[#3a6351] to-[#1f4037] flex items-center justify-center mb-4 shadow-lg">
-            <TreePine className="w-7 h-7 text-[#95bd91]" />
-          </div>
+          <BrandLogo size={56} priority className="mb-4 shadow-lg" />
           <h1 className="text-3xl font-bold text-[#1f4037] font-serif">{BRAND_NAME}</h1>
           <p className="text-[#3a6351] text-sm mt-1 font-medium tracking-wide uppercase">
             {BRAND_PORTAL_SUBTITLE}

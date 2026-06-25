@@ -7,8 +7,8 @@ import {
   Globe,
   LayoutDashboard,
   LogOut,
-  TreePine,
 } from "lucide-react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { usePortal } from "@/providers/PortalProvider";
 import { clearAuth } from "@/lib/auth";
 import { BRAND_NAME, BRAND_PORTAL_SUBTITLE, BRAND_PROJECTS_LABEL } from "@/lib/brand";
@@ -50,10 +50,7 @@ export function Sidebar({
     <aside className="fixed inset-y-0 left-0 z-20 hidden w-(--sidebar-w) flex-col border-r border-[rgba(255,255,255,.05)] bg-forest text-on-forest md:flex">
       {/* Logo area */}
       <div className="flex items-center gap-3 border-b border-[rgba(255,255,255,.06)] px-5 py-5.25">
-        <div className="relative grid h-9 w-9 flex-none place-items-center rounded-xl bg-linear-to-br from-[#2d5a44] to-[#1a3a2c] shadow-[0_2px_8px_rgba(0,0,0,.35),inset_0_1px_1px_rgba(255,255,255,.12)]">
-          <TreePine size={18} strokeWidth={1.7} className="text-[#7fcb90]" />
-          <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-[rgba(255,255,255,.1)]" />
-        </div>
+        <BrandLogo size={36} className="flex-none shadow-[0_2px_8px_rgba(0,0,0,.35)]" />
         <div>
           <b className="text-[14.5px] tracking-[0.15px] text-[#e8f2ea]">
             {loading ? "…" : BRAND_NAME}
