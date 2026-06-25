@@ -11,6 +11,7 @@ import {
 import { Co2Icon } from "@/components/ui/Co2Icon";
 import { Badge } from "@/components/ui/Badge";
 import { usePortal } from "@/providers/PortalProvider";
+import { BRAND_NAME, BRAND_PROJECTS_LABEL } from "@/lib/brand";
 import type { Project, Role, Route } from "@/lib/types";
 
 // ─── Status helpers ────────────────────────────────────────────────────────────
@@ -161,10 +162,10 @@ export function ShowcaseScreen({
           Project directory
         </div>
         <h1 className="mt-2 font-serif text-[26px] font-semibold leading-[1.05] tracking-[-0.015em] text-ink md:text-[30px]">
-          Otesha Projects
+          {BRAND_PROJECTS_LABEL}
         </h1>
         <p className="mt-1 text-[13.5px] text-muted">
-          All active and completed reforestation projects in the Otesha portfolio.
+          All active and completed reforestation projects in the {BRAND_NAME} portfolio.
         </p>
       </div>
 

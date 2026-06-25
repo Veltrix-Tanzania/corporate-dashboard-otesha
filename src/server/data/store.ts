@@ -1,5 +1,6 @@
 import type { Company, Monthly, Project, Report } from "@/lib/types";
 import type { ReportSettings } from "@/lib/api/types";
+import { BRAND_NAME } from "@/lib/brand";
 
 export const FX = 2600;
 
@@ -382,7 +383,7 @@ const monthly: Monthly = {
 
 export const company: Company = {
   name: "CRDB Bank",
-  portal: "Otesha",
+  portal: BRAND_NAME,
   account: "CRDB",
   user: "Almas Mchauru",
   email: "almasemilius@icloud.com",

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { usePortal } from "@/providers/PortalProvider";
 import { clearAuth } from "@/lib/auth";
+import { BRAND_NAME, BRAND_PORTAL_SUBTITLE, BRAND_PROJECTS_LABEL } from "@/lib/brand";
 import type { Route, Screen } from "@/lib/types";
 
 type NavItem = { id: Screen; icon: React.ReactNode; label: string; badge?: number };
@@ -42,7 +43,7 @@ export function Sidebar({
     { id: "projects", icon: <FolderKanban size={17} strokeWidth={1.9} />, label: "My Projects" },
     { id: "reports", icon: <FileText size={17} strokeWidth={1.9} />, label: "Reports", badge: newCount },
     { id: "emissions", icon: <Gauge size={17} strokeWidth={1.9} />, label: "Emissions" },
-    { id: "showcase", icon: <Globe size={17} strokeWidth={1.9} />, label: "Otesha Projects" },
+    { id: "showcase", icon: <Globe size={17} strokeWidth={1.9} />, label: BRAND_PROJECTS_LABEL },
   ];
 
   return (
@@ -55,9 +56,9 @@ export function Sidebar({
         </div>
         <div>
           <b className="text-[14.5px] tracking-[0.15px] text-[#e8f2ea]">
-            {loading ? "…" : company.portal}
+            {loading ? "…" : BRAND_NAME}
           </b>
-          <span className="mt-px block text-[11px] text-on-forest-mut">Corporate Portal</span>
+          <span className="mt-px block text-[11px] text-on-forest-mut">{BRAND_PORTAL_SUBTITLE}</span>
         </div>
       </div>
 

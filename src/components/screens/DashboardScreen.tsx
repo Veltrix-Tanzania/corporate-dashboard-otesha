@@ -17,6 +17,7 @@ import { RoleToggle } from "@/components/ui/RoleToggle";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Badge } from "@/components/ui/Badge";
 import { usePortal } from "@/providers/PortalProvider";
+import { BRAND_NAME, displayBrand } from "@/lib/brand";
 import { compactTZS } from "@/lib/format";
 import { DEFAULT_IMPACT_RANGE, METRICS } from "@/lib/constants";
 import { getImpactPeriodPhrase, sliceMetricByRange } from "@/lib/metrics";
@@ -100,7 +101,7 @@ function EmissionInsightsSection({
         <div className="border-b border-line bg-[rgba(20,50,40,.012)] px-5 py-3.5">
           <div className="flex items-center gap-2">
             <TreePine size={13} strokeWidth={2} className="text-ok-ink" />
-            <h3 className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-ink-2">Otesha is delivering</h3>
+            <h3 className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-ink-2">{BRAND_NAME} is delivering</h3>
           </div>
         </div>
         <div className="space-y-3 p-5">
@@ -389,7 +390,7 @@ export function DashboardScreen({
             <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:items-start">
               <div className="min-w-0 flex-[1_1_280px]">
                 <p className="font-serif text-xl leading-[1.55] text-ink [text-wrap:pretty]">
-                  {D.company.description ?? (
+                  {D.company.description ? displayBrand(D.company.description) : (
                     <>
                       {D.company.name} has {P.activeProjects} project{P.activeProjects !== 1 ? "s" : ""} running.
                       So far they&apos;ve put <b>{P.trees.toLocaleString()} trees</b> in the ground

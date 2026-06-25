@@ -1,4 +1,25 @@
-import { apiClient } from "./client";
+import { apiClient, ApiError } from "./client";
+
+export const NO_COMPANY_ASSIGNMENT_MESSAGE =
+  "Your account is not assigned to a company yet. Please contact your administrator to get access.";
+
+export function isNoCompanyAssignmentError(err: unknown): boolean {
+  if (!(err instanceof ApiError)) return false;
+  if (err.status === 404 && /no company found/i.test(err.message)) return true;
+  // Legacy backend response before null-check fix
+  if (err.status === 500 && /cannot read properties of null/i.test(err.message)) return true;
+  return false;
+}
+
+export function resolvePortalError(err: unknown): { message: string; unassigned: boolean } {
+  if (isNoCompanyAssignmentError(err)) {
+    return { message: NO_COMPANY_ASSIGNMENT_MESSAGE, unassigned: true };
+  }
+  if (err instanceof ApiError) {
+    return { message: err.message, unassigned: false };
+  }
+  return { message: "Failed to load portal data", unassigned: false };
+}
 
 // ─── Backend response types ───────────────────────────────────────────────────
 

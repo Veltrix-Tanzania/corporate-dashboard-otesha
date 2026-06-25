@@ -1,9 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { getMyCompany, getMyProject, getMyProjects, getMyStats } from "@/lib/api/corporate";
+import { getMyCompany, getMyProject, getMyProjects, getMyStats, resolvePortalError } from "@/lib/api/corporate";
 import { toCompany, toProject, toPortfolio, buildMonthly } from "@/lib/api/transform";
-import { ApiError } from "@/lib/api/client";
 import { getCurrentUser } from "@/lib/auth";
 import { fmtTZS, fmtUSD, usd } from "@/lib/format";
 import type { Alert, Company, Monthly, Portfolio, Project, Report } from "@/lib/types";
@@ -55,6 +54,7 @@ interface PortalData {
 type PortalContextValue = PortalData & {
   loading: boolean;
   error: string | null;
+  unassigned: boolean;
   refetch: () => Promise<void>;
   projectById: (id: string) => Project | undefined;
   reportById: (id: string) => Report | undefined;
@@ -85,13 +85,15 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [unassigned, setUnassigned] = useState(false);
 
   const refetch = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setUnassigned(false);
     try {
-      const [backendCompany, projectList, stats] = await Promise.all([
-        getMyCompany(),
+      const backendCompany = await getMyCompany();
+      const [projectList, stats] = await Promise.all([
         getMyProjects(),
         getMyStats(),
       ]);
@@ -124,8 +126,9 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
         monthly,
       });
     } catch (e) {
-      const message = e instanceof ApiError ? e.message : "Failed to load portal data";
-      setError(message);
+      const resolved = resolvePortalError(e);
+      setError(resolved.message);
+      setUnassigned(resolved.unassigned);
     } finally {
       setLoading(false);
     }
@@ -140,6 +143,7 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
       ...data,
       loading,
       error,
+      unassigned,
       refetch,
       projectById: (id) => data.projects.find((p) => p.id === id),
       reportById: (id) => data.reports.find((r) => r.id === id),
@@ -147,7 +151,7 @@ export function PortalProvider({ children }: { children: React.ReactNode }) {
       fmtTZS,
       fmtUSD,
     }),
-    [data, loading, error, refetch]
+    [data, loading, error, unassigned, refetch]
   );
 
   return <PortalContext.Provider value={value}>{children}</PortalContext.Provider>;

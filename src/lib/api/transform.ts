@@ -1,5 +1,6 @@
 import type { BackendCompany, BackendProject, CompanyStats } from "./corporate";
 import type { CorporateUser } from "@/lib/auth";
+import { BRAND_NAME } from "@/lib/brand";
 import type { Company, Monthly, Portfolio, Project, Site } from "@/lib/types";
 
 // ─── Mock data preserved for fields the backend doesn't provide ───────────────
@@ -25,7 +26,7 @@ const ramp = (a: number, b: number, wobble = 0) =>
 export function toCompany(c: BackendCompany, authUser?: CorporateUser | null): Company {
   return {
     name: c.name,
-    portal: "Otesha",
+    portal: BRAND_NAME,
     account: c.name,
     user: authUser?.fullName ?? "",
     email: authUser?.email ?? "",

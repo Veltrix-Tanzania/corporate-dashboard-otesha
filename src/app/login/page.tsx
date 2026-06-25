@@ -3,8 +3,10 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TreePine, Mail, ArrowLeft } from "lucide-react";
-import { requestOtp, verifyOtp } from "@/lib/api/corporate";
-import { setAuth } from "@/lib/auth";
+import { requestOtp, verifyOtp, getMyCompany, NO_COMPANY_ASSIGNMENT_MESSAGE, isNoCompanyAssignmentError } from "@/lib/api/corporate";
+import { ApiError } from "@/lib/api/client";
+import { BRAND_NAME, BRAND_PORTAL_SUBTITLE } from "@/lib/brand";
+import { setAuth, clearAuth } from "@/lib/auth";
 
 type Step = "email" | "otp";
 
@@ -61,6 +63,22 @@ export default function LoginPage() {
         phoneNumber: data.user.phoneNumber,
         avatarUrl: data.user.avatarUrl,
       });
+
+      try {
+        await getMyCompany();
+      } catch (err) {
+        clearAuth();
+        setError(
+          isNoCompanyAssignmentError(err)
+            ? NO_COMPANY_ASSIGNMENT_MESSAGE
+            : err instanceof ApiError
+              ? err.message
+              : "Could not verify your company access. Please try again."
+        );
+        setLoading(false);
+        return;
+      }
+
       router.push("/");
       router.refresh();
     } catch (err) {
@@ -131,9 +149,9 @@ export default function LoginPage() {
           <div className="w-14 h-14 rounded-full bg-gradient-to-b from-[#3a6351] to-[#1f4037] flex items-center justify-center mb-4 shadow-lg">
             <TreePine className="w-7 h-7 text-[#95bd91]" />
           </div>
-          <h1 className="text-3xl font-bold text-[#1f4037] font-serif">Otesha</h1>
+          <h1 className="text-3xl font-bold text-[#1f4037] font-serif">{BRAND_NAME}</h1>
           <p className="text-[#3a6351] text-sm mt-1 font-medium tracking-wide uppercase">
-            Corporate Portal
+            {BRAND_PORTAL_SUBTITLE}
           </p>
         </div>
 

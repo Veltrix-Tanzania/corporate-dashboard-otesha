@@ -12,11 +12,12 @@ import { SettingsScreen } from "@/components/screens/SettingsScreen";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useRoute } from "@/hooks/useRoute";
+import { clearAuth } from "@/lib/auth";
 import { PortalProvider, usePortal } from "@/providers/PortalProvider";
 
 function PortalShell() {
   const { route, role, go, navKey, hydrated } = useRoute();
-  const { reports, loading, error, refetch } = usePortal();
+  const { reports, loading, error, unassigned, refetch } = usePortal();
   const newCount = reports.filter((r) => r.status === "new").length;
 
   if (!hydrated) {
@@ -62,7 +63,18 @@ function PortalShell() {
         {loading ? (
           <LoadingState label="Loading portal data…" />
         ) : error ? (
-          <ErrorState message={error} onRetry={refetch} />
+          <ErrorState
+            message={error}
+            onRetry={
+              unassigned
+                ? () => {
+                    clearAuth();
+                    window.location.href = "/login";
+                  }
+                : refetch
+            }
+            retryLabel={unassigned ? "Return to sign in" : "Try again"}
+          />
         ) : (
           <div key={route.screen + (route.id ?? "") + role} className="fade-in">
             {screen}

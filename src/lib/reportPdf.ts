@@ -1,4 +1,5 @@
 import type { Report, Project } from "./types";
+import { BRAND_NAME, BRAND_PORTAL_LABEL } from "./brand";
 
 export function printReportPDF(report: Report, project: Project) {
   const win = window.open("", "_blank");
@@ -20,7 +21,7 @@ export function printReportPDF(report: Report, project: Project) {
 
   win.document.write(`<!DOCTYPE html><html><head>
 <meta charset="utf-8">
-<title>${report.title} — Otesha Report</title>
+<title>${report.title} — ${BRAND_NAME} Report</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Georgia,'Times New Roman',serif;color:#1a2e1f;background:#fff;padding:40px;max-width:760px;margin:0 auto}
@@ -52,7 +53,7 @@ h2{font-size:11px;font-family:Arial,sans-serif;font-weight:700;text-transform:up
 </style></head><body>
 
 <div class="header">
-  <div class="brand">Otesha Corporate Portal &nbsp;·&nbsp; Satellite Monitoring Report</div>
+  <div class="brand">${BRAND_PORTAL_LABEL} &nbsp;·&nbsp; Satellite Monitoring Report</div>
   <h1>${report.title}</h1>
   <div class="meta">
     ${project.name} &nbsp;·&nbsp; ${project.region}
@@ -122,7 +123,7 @@ ${project.sites.length > 0 ? `
   Project: ${project.name} &nbsp;·&nbsp; Region: ${project.region} &nbsp;·&nbsp;
   Locations: ${project.locations} &nbsp;·&nbsp; Species: ${project.species}<br>
   Methodology: DEFRA 2024 · NCAIC verified · Veritree species data · Sentinel-2 L2A imagery<br>
-  Generated ${date} via Otesha Corporate Portal
+  Generated ${date} via ${BRAND_PORTAL_LABEL}
 </div>
 
 </body></html>`);

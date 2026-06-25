@@ -22,6 +22,7 @@ import {
 import { RoleToggle } from "@/components/ui/RoleToggle";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { usePortal } from "@/providers/PortalProvider";
+import { BRAND_NAME, BRAND_PORTAL_LABEL } from "@/lib/brand";
 import type { Role, Route } from "@/lib/types";
 
 // ─── DEFRA 2024 conversion factors (kg CO₂e per unit) ─────────────────────────
@@ -88,7 +89,7 @@ function buildCSV(
     rows.map((cr) => row(cr.label, cr.unit, cr.value, cr.factor, (cr.value * cr.factor).toFixed(2))).join("\n");
 
   return [
-    row("Otesha Corporate Portal — Emissions Report"),
+    row(`${BRAND_PORTAL_LABEL} — Emissions Report`),
     row("Generated", new Date().toLocaleDateString("en-GB")),
     "",
     row("SCOPE 1 - Direct Emissions"),
@@ -158,7 +159,7 @@ function parseCSV(text: string): ParsedCSV {
     if (c0.startsWith("SCOPE 1")) { section = "s1"; continue; }
     if (c0.startsWith("SCOPE 2")) { section = "s2"; continue; }
     if (c0.startsWith("SCOPE 3")) { section = "s3"; continue; }
-    if (c0 === "RESULTS" || c0 === "Item" || c0.startsWith("Otesha") || c0 === "Generated") continue;
+    if (c0 === "RESULTS" || c0 === "Item" || c0.startsWith(BRAND_NAME) || c0 === "Generated") continue;
 
     const qty = parseFloat(cols[2]) || 0;
     const factor = parseFloat(cols[3]) || 0;
@@ -206,7 +207,7 @@ function printPDF(
   const date = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 
   win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>Emissions Report — Otesha</title>
+<title>Emissions Report — ${BRAND_NAME}</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Georgia,'Times New Roman',serif;color:#1a2e1f;background:#fff;padding:40px;max-width:780px;margin:0 auto}
