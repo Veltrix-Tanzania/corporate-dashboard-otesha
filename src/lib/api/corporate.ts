@@ -101,7 +101,7 @@ export interface BackendProject {
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export async function requestOtp(email: string): Promise<void> {
-  await apiClient.post<unknown>("/auth/otp/request", { email });
+  await apiClient.post<unknown>("/auth/otp/request", { email, corporatePortal: true });
 }
 
 export async function verifyOtp(email: string, code: string): Promise<AuthResponse> {
